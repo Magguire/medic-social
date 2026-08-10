@@ -1,0 +1,11 @@
+* text=auto
+*.cs text
+*.csproj text
+*.sln text
+*.json text
+*.md text
+*.js text
+*.jsx text
+*.ts text
+*.tsx text
+*.css text

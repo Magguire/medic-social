@@ -1,0 +1,8 @@
+{
+  "Database": {
+    "Provider": "SqlServer"
+  },
+  "ConnectionStrings": {
+    "SqlServer": "data source=mvchr\\MSXPRESS;user id=Test;password=1234;initial catalog=MedSocial2Platform0420;integrated security=true;multipleactiveresultsets=true;TrustServerCertificate=true;Encrypt=false;"
+  }
+}

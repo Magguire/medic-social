@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <rect width="1200" height="900" fill="#f8fafc" />
+  <g transform="translate(50,40)">
+    <rect width="1100" height="180" rx="12" fill="url(#grad1)"/>
+    <defs>
+      <linearGradient id="grad1" x1="0" x2="1">
+        <stop offset="0%" stop-color="#06b6d4"/>
+        <stop offset="100%" stop-color="#3b82f6"/>
+      </linearGradient>
+    </defs>
+    <text x="28" y="48" font-family="Inter,Segoe UI,Arial" font-size="28" fill="#fff">MedConnect Kenya</text>
+    <text x="28" y="84" font-family="Inter,Segoe UI,Arial" font-size="16" fill="#f0f9ff">Find verified healthcare jobs and connect with employers.</text>
+    <g transform="translate(760,18)">
+      <rect x="0" y="0" width="320" height="140" rx="12" fill="#ffffff" opacity="0.08" />
+    </g>
+  </g>
+
+  <g transform="translate(50,260)">
+    <rect x="0" y="0" width="720" height="360" rx="12" fill="#ffffff" stroke="#e6eefc" stroke-width="1"/>
+    <image href="/images/hero-illustration.svg" x="24" y="24" width="672" height="312"/>
+  </g>
+
+  <g transform="translate(800,260)">
+    <rect x="0" y="0" width="300" height="120" rx="10" fill="#fff"/>
+    <text x="18" y="36" font-family="Inter" font-size="18" fill="#0b1228">Featured Job</text>
+    <text x="18" y="64" font-family="Inter" font-size="14" fill="#475569">Nursing Officer — County Hospital</text>
+  </g>
+
+  <g transform="translate(50,640)">
+    <rect x="0" y="0" width="1100" height="180" rx="12" fill="#fff" stroke="#eef2ff"/>
+    <text x="24" y="40" font-family="Inter" font-size="18" fill="#0b1228">Recent applications</text>
+  </g>
+</svg>

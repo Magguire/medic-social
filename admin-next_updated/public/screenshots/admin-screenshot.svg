@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="adm" x1="0" x2="1">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="240" fill="url(#adm)" />
+  <g transform="translate(40,32)">
+    <text x="0" y="44" font-family="Inter" font-size="28" fill="#fff">Admin Dashboard</text>
+    <text x="0" y="80" font-family="Inter" font-size="14" fill="#e6ecff">Manage professionals, jobs and verification requests</text>
+  </g>
+
+  <g transform="translate(40,280)">
+    <rect x="0" y="0" width="520" height="180" rx="12" fill="#fff" />
+    <text x="20" y="40" font-family="Inter" font-size="18" fill="#0b1228">Professionals</text>
+    <text x="20" y="70" font-family="Inter" font-size="14" fill="#64748b">12 pending verifications</text>
+  </g>
+
+  <g transform="translate(600,280)">
+    <rect x="0" y="0" width="520" height="180" rx="12" fill="#fff" />
+    <text x="20" y="40" font-family="Inter" font-size="18" fill="#0b1228">Jobs</text>
+    <text x="20" y="70" font-family="Inter" font-size="14" fill="#64748b">8 active listings</text>
+  </g>
+
+  <g transform="translate(40,500)">
+    <rect x="0" y="0" width="1080" height="220" rx="12" fill="#fff" />
+    <text x="20" y="36" font-family="Inter" font-size="16" fill="#0b1228">Recent activity</text>
+  </g>
+</svg>

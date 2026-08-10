@@ -1,0 +1,119 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: medsocial2-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-MedSocial2_Strong!Passw0rd}
+    ports:
+      - "${SQLSERVER_PORT:-14333}:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -C -Q "SELECT 1" || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1"
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  mongodb:
+    image: mongo:7
+    container_name: medsocial2-mongodb
+    ports:
+      - "${MONGODB_PORT:-27017}:27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: mongosh --quiet --eval "db.adminCommand('ping').ok" || mongo --quiet --eval "db.adminCommand('ping').ok"
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  api:
+    build:
+      context: .
+      dockerfile: src/MedSocial2.Api/Dockerfile
+    container_name: medsocial2-api
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: http://+:8080
+      Database__Provider: SqlServer
+      ConnectionStrings__SqlServer: Server=sqlserver,1433;Database=${MSSQL_DATABASE:-MedSocial2Platform};User Id=sa;Password=${MSSQL_SA_PASSWORD:-MedSocial2_Strong!Passw0rd};TrustServerCertificate=True;Encrypt=False;MultipleActiveResultSets=True;
+      SocialMongo__ConnectionString: mongodb://mongodb:27017
+      SocialMongo__DatabaseName: ${MONGODB_DATABASE:-MedSocial2Social}
+      DocumentStorage__Local__BasePath: /app/Documents
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:-MedSocial2-Docker-Signing-Key-Change-Me-At-Deployment}
+    volumes:
+      - api-documents:/app/Documents
+      - api-social-media:/app/wwwroot/social-media
+    healthcheck:
+      test: wget -qO- http://localhost:8080/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+
+  client-next:
+    build:
+      context: .
+      dockerfile: apps/client-next/Dockerfile
+    container_name: medsocial2-client-next
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+
+  admin-next:
+    build:
+      context: .
+      dockerfile: apps/admin-next/Dockerfile
+    container_name: medsocial2-admin-next
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+
+  admin-blazor:
+    build:
+      context: .
+      dockerfile: apps/admin-blazor/Dockerfile
+    container_name: medsocial2-admin-blazor
+    depends_on:
+      api:
+        condition: service_healthy
+
+  gateway:
+    build:
+      context: .
+      dockerfile: infra/gateway/Dockerfile
+    container_name: medsocial2-gateway
+    depends_on:
+      api:
+        condition: service_healthy
+      client-next:
+        condition: service_started
+      admin-next:
+        condition: service_started
+      admin-blazor:
+        condition: service_started
+    ports:
+      - "${CLIENT_PORT:-3000}:3000"
+      - "${ADMIN_PORT:-3001}:3001"
+      - "${ADMIN_BLAZOR_PORT:-3002}:3002"
+
+volumes:
+  sqlserver-data:
+  mongodb-data:
+  api-documents:
+  api-social-media:
