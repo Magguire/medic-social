@@ -4,7 +4,7 @@ import AdminShell from '../components/AdminShell';
 import { adminApi } from '../lib/api';
 
 const defaultTheme = {
-  primaryColor: '#607f75',
+  primaryColor: '#50b998',
   secondaryColor: '#111827',
   accentColor: '#b66a3c',
   backgroundColor: '#fbf7ef',

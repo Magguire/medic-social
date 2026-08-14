@@ -84,6 +84,25 @@ export default function AdminShell({ user, title, subtitle, children }) {
     };
   }, [auth, effectiveUser?.email]);
 
+  useEffect(() => {
+    const closeMenu = () => setMenuOpen(false);
+    router.events.on('routeChangeComplete', closeMenu);
+    return () => router.events.off('routeChangeComplete', closeMenu);
+  }, [router.events]);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    document.body.classList.add('drawer-open');
+    return () => {
+      document.removeEventListener('keydown', closeOnEscape);
+      document.body.classList.remove('drawer-open');
+    };
+  }, [menuOpen]);
+
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme);
@@ -106,7 +125,7 @@ export default function AdminShell({ user, title, subtitle, children }) {
 
   return (
     <div className={`admin-shell ${collapsed ? 'sidebar-collapsed' : ''}`}>
-      <aside className={`admin-sidebar ${menuOpen ? 'open' : ''}`}>
+      <aside id="admin-navigation" className={`admin-sidebar ${menuOpen ? 'open' : ''}`}>
         <div className="admin-brand">
           <div className="admin-brand-mark">+</div>
           <div className="sidebar-label">
@@ -142,7 +161,7 @@ export default function AdminShell({ user, title, subtitle, children }) {
 
       <main className="admin-main">
         <div className="admin-topbar">
-          <button className="btn-secondary admin-menu-button" onClick={() => setMenuOpen((current) => !current)}>☰</button>
+          <button className="btn-secondary admin-menu-button" aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={menuOpen} aria-controls="admin-navigation" onClick={() => setMenuOpen((current) => !current)}>{menuOpen ? '×' : '☰'}</button>
           <div className="topbar-title">
             <nav className="breadcrumbs" aria-label="Breadcrumb">
               {crumbs.map((crumb, index) => <span key={`${crumb}-${index}`}>{crumb}</span>)}

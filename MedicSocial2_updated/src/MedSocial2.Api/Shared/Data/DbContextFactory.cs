@@ -161,6 +161,7 @@ namespace Shared.Data
         {
             using var scope = provider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
             var defaultTenant = await dbContext.Tenants.FirstOrDefaultAsync(t => t.Id == PlatformTenant.Id || t.Slug == PlatformTenant.Slug);
             if (defaultTenant == null)
@@ -200,8 +201,9 @@ namespace Shared.Data
                 dbContext.PasswordPolicies.Add(PasswordPolicyConfig.Default());
             }
 
-            var adminEmail = "admin@medicsocial.local";
-            var adminPassword = "Admin@12345";
+            var adminEmail = configuration["DefaultAdmin:Email"] ?? "admin@medicsocial.local";
+            var adminPassword = configuration["DefaultAdmin:Password"] ?? "Admin@12345";
+            var resetDefaultAdmin = configuration.GetValue<bool>("DefaultAdmin:ResetOnStartup");
             var adminUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == adminEmail);
             if (adminUser == null)
             {
@@ -223,7 +225,7 @@ namespace Shared.Data
                 };
                 await dbContext.Users.AddAsync(adminUser);
             }
-            else if (PasswordHasher.NeedsRehash(adminUser.PasswordHash))
+            else if (resetDefaultAdmin || PasswordHasher.NeedsRehash(adminUser.PasswordHash))
             {
                 adminUser.PasswordHash = PasswordHasher.Hash(adminPassword);
                 adminUser.IsActive = true;

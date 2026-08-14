@@ -21,6 +21,7 @@ namespace Employer.Application.Commands
         string FacilityType,
         string ContactEmail,
         string? ContactPhone,
+        bool IsContactPhonePublic,
         string? Address,
         string? BusinessRegistrationNumber,
         string? KraPin,
@@ -32,6 +33,7 @@ namespace Employer.Application.Commands
         string? FacilityType,
         string? ContactEmail,
         string? ContactPhone,
+        bool? IsContactPhonePublic,
         string? Address,
         string? BusinessRegistrationNumber,
         string? KraPin,
@@ -51,6 +53,7 @@ namespace Employer.Application.Commands
         string FacilityType,
         string ContactEmail,
         string? ContactPhone,
+        bool IsContactPhonePublic,
         string? Address,
         string SubscriptionTier,
         string VerificationStatus,
@@ -123,6 +126,7 @@ namespace Employer.Application.Commands
                 FacilityType = string.IsNullOrWhiteSpace(request.FacilityType) ? "Healthcare Facility" : request.FacilityType,
                 ContactEmail = request.ContactEmail,
                 ContactPhone = request.ContactPhone,
+                IsContactPhonePublic = request.IsContactPhonePublic,
                 Address = request.Address,
                 BusinessRegistrationNumber = request.BusinessRegistrationNumber,
                 KraPin = request.KraPin,
@@ -183,6 +187,7 @@ namespace Employer.Application.Commands
             if (request.FacilityType != null) emp.FacilityType = request.FacilityType;
             if (request.ContactEmail != null) emp.ContactEmail = request.ContactEmail;
             if (request.ContactPhone != null) emp.ContactPhone = request.ContactPhone;
+            if (request.IsContactPhonePublic.HasValue) emp.IsContactPhonePublic = request.IsContactPhonePublic.Value;
             if (request.Address != null) emp.Address = request.Address;
             if (request.BusinessRegistrationNumber != null) emp.BusinessRegistrationNumber = request.BusinessRegistrationNumber;
             if (request.KraPin != null) emp.KraPin = request.KraPin;
@@ -297,6 +302,7 @@ namespace Employer.Application.Commands
             profile.FacilityType,
             profile.ContactEmail,
             profile.ContactPhone,
+            profile.IsContactPhonePublic,
             profile.Address,
             profile.SubscriptionTier,
             profile.VerificationStatus,

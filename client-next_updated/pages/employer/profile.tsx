@@ -48,6 +48,7 @@ export default function EmployerProfilePage() {
     name: '',
     facilityType: '',
     contactPhone: '',
+    isContactPhonePublic: false,
     address: '',
     businessRegistrationNumber: '',
     kraPin: '',
@@ -105,6 +106,7 @@ export default function EmployerProfilePage() {
         name: existing.name || '',
         facilityType: existing.facilityType || '',
         contactPhone: existing.contactPhone || '',
+        isContactPhonePublic: existing.isContactPhonePublic ?? false,
         address: existing.address || '',
         businessRegistrationNumber: existing.businessRegistrationNumber || '',
         kraPin: existing.kraPin || '',
@@ -223,6 +225,13 @@ export default function EmployerProfilePage() {
                 <label><span className={fieldLabelClass}>Facility type</span><select className="input-shell" value={form.facilityType} onChange={(event) => handleFacilityTypeChange(event.target.value)}><option value="">Select facility type</option>{facilityTypes.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
                 <label><span className={fieldLabelClass}>Contact email</span><input className="input-shell" value={user?.email || profile?.contactEmail || ''} disabled /></label>
                 <div><PhoneInput label="Contact phone" countryValue={contactRegion} phoneValue={form.contactPhone} onCountryChange={setContactRegion} onPhoneChange={(value) => setForm((current) => ({ ...current, contactPhone: value }))} /></div>
+                <label className="flex min-h-12 items-center gap-3 rounded-[13px] border border-[var(--client-border)] bg-[var(--client-panel)] px-4 py-3 md:col-span-2">
+                  <input type="checkbox" checked={form.isContactPhonePublic} onChange={(event) => setForm((current) => ({ ...current, isContactPhonePublic: event.target.checked }))} />
+                  <span>
+                    <strong className="block text-sm text-[var(--client-text)]">Display the business phone number publicly</strong>
+                    <small className="mt-1 block text-[var(--client-muted)]">Off by default. When disabled, the number remains available only for account administration and authorized workflows.</small>
+                  </span>
+                </label>
               </div>
             </details>
 

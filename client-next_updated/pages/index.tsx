@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
+import { useAuth } from '../lib/useAuth';
 import { contentApi } from '../lib/contentApi';
 import { jobApi } from '../lib/jobApi';
-import type { Job } from '../types';
 
 const storyCards = [
   {
@@ -45,13 +45,6 @@ const storyCards = [
   },
 ];
 
-const platformFeatures = [
-  { icon: 'V', title: 'Verified profiles', body: 'Profiles, education, experience, documents, and verification status stay connected to applications.', isVisible: true, displayOrder: 0 },
-  { icon: 'E', title: 'Employer workspaces', body: 'Facilities manage job posts, team access, applicants, candidate invites, and communication.', isVisible: true, displayOrder: 1 },
-  { icon: 'F', title: 'Feed and messages', body: 'Registered users can post, join channels, request chats, and receive in-app notifications.', isVisible: true, displayOrder: 2 },
-  { icon: 'A', title: 'Admin-configured rules', body: 'Subscriptions, pay-as-you-go, declarations, legal pages, document rules, and policies remain configurable.', isVisible: true, displayOrder: 3 },
-];
-
 const defaultLanding = {
   isHeroMediaVisible: true,
   badgeText: 'Open roles available now',
@@ -63,38 +56,51 @@ const defaultLanding = {
   secondaryCallToActionText: 'Join network',
   secondaryCallToActionUrl: '/register',
   heroSlides: storyCards,
-  featureCards: platformFeatures,
+  featureCards: [],
   employerCalloutTitle: 'Hiring for a medical facility? Find vetted talent with a clearer pipeline.',
   employerCalloutBody: 'Post openings, configure requirements, manage applicants, invite matching professionals, and keep communication inside the same workspace.',
+  journeySectionTitle: 'One platform. Two clear paths.',
+  journeySectionBody: 'Create a free account to connect with the people and opportunities that move healthcare forward.',
+  professionalJourneyTitle: 'For healthcare professionals',
+  professionalJourneyBody: 'Build one trusted profile, discover suitable roles, and connect directly with potential employers.',
+  employerJourneyTitle: 'For employers',
+  employerJourneyBody: 'Grow a searchable talent pool, publish opportunities, and reach healthcare professionals ready for their next role.',
+  freeAccessTitle: 'Start free in three simple steps',
+  freeAccessBody: 'Choose your account type, create your free account, then complete your profile and start connecting.',
 };
-
-function formatMoney(value: number) {
-  if (!value) return 'Salary not listed';
-  return value.toLocaleString();
-}
 
 export default function HomePage() {
   const router = useRouter();
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const { hydrated, isAuthenticated, bootstrapUser } = useAuth();
   const [stats, setStats] = useState({ liveJobs: 0, employers: 0, professionals: 0 });
-  const [searchTerm, setSearchTerm] = useState('');
-  const [location, setLocation] = useState('');
   const [activeStory, setActiveStory] = useState(0);
   const [landing, setLanding] = useState(defaultLanding);
 
+  const handleFindRoles = async () => {
+    const destination = landing.primaryCallToActionUrl || '/jobs';
+    const loginPath = `/login?next=${encodeURIComponent(destination)}`;
+    if (!hydrated || !isAuthenticated) {
+      await router.push(loginPath);
+      return;
+    }
+
+    try {
+      await bootstrapUser();
+      await router.push(destination);
+    } catch {
+      await router.push(loginPath);
+    }
+  };
   useEffect(() => {
-    Promise.all([
-      jobApi.listJobs(undefined, 1, 6).catch(() => ({ jobs: [], totalCount: 0 })),
-      jobApi.getMarketplaceMetrics().catch(() => ({ liveJobs: 0, employers: 0, professionals: 0 })),
-    ]).then(([jobResponse, metricResponse]) => {
-      const publicJobs = jobResponse.jobs || [];
-      setJobs(publicJobs);
-      setStats({
-        liveJobs: metricResponse.liveJobs || jobResponse.totalCount || publicJobs.length || 0,
-        employers: metricResponse.employers || 0,
-        professionals: metricResponse.professionals || 0,
-      });
-    });
+    jobApi.getMarketplaceMetrics()
+      .then((metricResponse) => {
+        setStats({
+          liveJobs: metricResponse.liveJobs || 0,
+          employers: metricResponse.employers || 0,
+          professionals: metricResponse.professionals || 0,
+        });
+      })
+      .catch(() => setStats({ liveJobs: 0, employers: 0, professionals: 0 }));
   }, []);
 
   useEffect(() => {
@@ -113,32 +119,22 @@ export default function HomePage() {
   }, [landing.heroSlides]);
 
   const visibleStories = (landing.heroSlides || []).filter((item: any) => item.isVisible !== false).sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0));
-  const visibleFeatures = (landing.featureCards || []).filter((item: any) => item.isVisible !== false).sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0));
   const story = visibleStories[activeStory] || storyCards[0];
-  const featuredJobs = jobs.slice(0, 4);
-  const secondaryJobs = jobs.slice(4, 6);
-
-  const handleSearch = () => {
-    const params = new URLSearchParams();
-    if (searchTerm.trim()) params.set('q', searchTerm.trim());
-    if (location.trim()) params.set('location', location.trim());
-    router.push(`/jobs${params.toString() ? `?${params.toString()}` : ''}`);
-  };
 
   return (
     <Layout>
-      <section className="overflow-hidden rounded-[44px] border border-slate-200/80 bg-[var(--client-panel)] shadow-[0_28px_90px_rgba(15,23,42,0.08)]">
+      <section className="overflow-hidden rounded-[24px] border border-slate-200/80 bg-[var(--client-panel)] shadow-[0_28px_90px_rgba(15,23,42,0.08)] sm:rounded-[36px] xl:rounded-[44px]">
         <div className="grid gap-8 px-5 py-8 sm:px-8 lg:px-10 xl:grid-cols-[minmax(0,0.95fr)_minmax(420px,0.9fr)] xl:py-10">
-          <div className="flex min-h-[500px] flex-col justify-between">
+          <div className="flex flex-col justify-between xl:min-h-[500px]">
             <div>
               <div className="inline-flex items-center gap-3 rounded-full bg-[color-mix(in_srgb,var(--client-primary)_12%,var(--client-panel))] px-4 py-2 text-sm font-black uppercase tracking-[0.14em] text-[var(--client-primary)]">
                 <span className="grid h-5 w-5 place-items-center rounded-full bg-[var(--client-primary)]">
                   <span className="h-2.5 w-2.5 rounded-full bg-white" />
                 </span>
-                {stats.liveJobs || featuredJobs.length} {landing.badgeText}
+                {stats.liveJobs} {landing.badgeText}
               </div>
 
-              <h1 className="mt-8 max-w-6xl text-[4.25rem] font-black leading-[0.95] tracking-[-0.075em] text-[var(--client-text)] sm:text-[5.9rem] xl:text-[6.9rem]">
+              <h1 className="mt-6 max-w-6xl text-[2.75rem] font-black leading-[0.98] tracking-[-0.06em] text-[var(--client-text)] sm:mt-8 sm:text-[4.6rem] lg:text-[5.5rem] xl:text-[6.9rem]">
                 {landing.headline.includes(landing.highlightText) && landing.highlightText ? (
                   <>
                     {landing.headline.split(landing.highlightText)[0]}<span className="text-[var(--client-primary)]">{landing.highlightText}</span>{landing.headline.split(landing.highlightText).slice(1).join(landing.highlightText)}
@@ -152,34 +148,8 @@ export default function HomePage() {
             </div>
 
             <div className="mt-10 space-y-5">
-              <div className="rounded-[28px] border border-slate-200 bg-white p-3 shadow-[0_26px_70px_rgba(15,23,42,0.12)]">
-                <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(220px,0.7fr)_auto]">
-                  <label className="sr-only" htmlFor="landing-search">Job title or keyword</label>
-                  <input
-                    id="landing-search"
-                    className="h-16 rounded-[22px] border border-slate-100 bg-[var(--client-panel)] px-6 text-lg text-[var(--client-text)] outline-none transition focus:border-[var(--client-primary)] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--client-primary)_14%,transparent)]"
-                    placeholder="Job title, keyword, skill, or facility"
-                    value={searchTerm}
-                    onChange={(event) => setSearchTerm(event.target.value)}
-                    onKeyDown={(event) => event.key === 'Enter' && handleSearch()}
-                  />
-                  <label className="sr-only" htmlFor="landing-location">City, region, or remote preference</label>
-                  <input
-                    id="landing-location"
-                    className="h-16 rounded-[22px] border border-slate-100 bg-[var(--client-panel)] px-6 text-lg text-[var(--client-text)] outline-none transition focus:border-[var(--client-primary)] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--client-primary)_14%,transparent)]"
-                    placeholder="City or remote"
-                    value={location}
-                    onChange={(event) => setLocation(event.target.value)}
-                    onKeyDown={(event) => event.key === 'Enter' && handleSearch()}
-                  />
-                  <button className="rounded-[22px] bg-[var(--client-primary)] px-9 text-lg font-black text-white shadow-[0_18px_35px_rgba(94,128,120,0.24)] transition hover:bg-[color-mix(in_srgb,var(--client-primary)_86%,#000)]" onClick={handleSearch}>
-                    Search Jobs
-                  </button>
-                </div>
-              </div>
-
               <div className="flex flex-wrap gap-3">
-                <Link href={landing.primaryCallToActionUrl || '/jobs'} className="rounded-full border border-slate-200 bg-[var(--client-panel)] px-5 py-3 font-black text-[var(--client-secondary)] transition hover:border-[var(--client-primary)]">{landing.primaryCallToActionText || 'Find roles'}</Link>
+                <button type="button" onClick={handleFindRoles} className="rounded-full border border-slate-200 bg-[var(--client-panel)] px-5 py-3 font-black text-[var(--client-secondary)] transition hover:border-[var(--client-primary)]">{landing.primaryCallToActionText || 'Find roles'}</button>
                 <Link href="/feed" className="rounded-full border border-slate-200 bg-[var(--client-panel)] px-5 py-3 font-black text-[var(--client-secondary)] transition hover:border-[var(--client-primary)]">Open Feed</Link>
                 <Link href={landing.secondaryCallToActionUrl || '/register'} className="rounded-full bg-[var(--client-primary)] px-5 py-3 font-black text-white transition hover:bg-[color-mix(in_srgb,var(--client-primary)_86%,#000)]">{landing.secondaryCallToActionText || 'Join network'}</Link>
               </div>
@@ -189,8 +159,8 @@ export default function HomePage() {
           <aside className={`relative flex flex-col justify-center gap-5 ${landing.isHeroMediaVisible ? '' : 'xl:justify-center'}`}>
             <div className="pointer-events-none absolute right-4 top-2 hidden h-48 w-48 rounded-full border-[34px] border-solid xl:block" style={{ borderColor: 'color-mix(in srgb, var(--client-secondary) 10%, transparent)' }} />
             {landing.isHeroMediaVisible && (
-            <div className={`relative overflow-hidden rounded-[38px] border border-[var(--client-border)] bg-gradient-to-br ${story.tint} p-7 shadow-[0_24px_70px_rgba(15,23,42,0.12)]`}>
-              <div className="relative min-h-[430px] rounded-[30px] bg-[var(--client-panel)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]">
+            <div className={`relative overflow-hidden rounded-[24px] border border-[var(--client-border)] bg-gradient-to-br ${story.tint} p-3 shadow-[0_24px_70px_rgba(15,23,42,0.12)] sm:rounded-[38px] sm:p-7`}>
+              <div className="relative min-h-[390px] rounded-[22px] bg-[var(--client-panel)] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] sm:min-h-[430px] sm:rounded-[30px] sm:p-5">
                 <div className="h-44 overflow-hidden rounded-[28px] border border-[var(--client-border)] bg-[var(--client-panel-soft)] shadow-inner">
                   {story.imageUrl && <img src={story.imageUrl} alt={story.imageAlt || story.title} className="h-full w-full object-cover" />}
                 </div>
@@ -199,7 +169,7 @@ export default function HomePage() {
                   <div className="absolute -top-16 left-6 grid h-28 w-28 place-items-center rounded-full bg-[var(--client-primary)] text-5xl font-black text-white shadow-2xl ring-8 ring-[var(--client-panel)]">
                     m
                   </div>
-                  <div className="pl-32">
+                  <div className="pt-14 sm:pl-32 sm:pt-0">
                     <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--client-primary)]">{story.label || story.partner}</p>
                     <h2 className="mt-2 text-2xl font-black leading-tight tracking-[-0.04em] text-[var(--client-text)]">{story.title}</h2>
                   </div>
@@ -226,11 +196,11 @@ export default function HomePage() {
             </div>
             )}
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {[['Live roles', stats.liveJobs], ['Employers', stats.employers], ['Professionals', stats.professionals]].map(([label, value]) => (
-                <div key={label} className="rounded-[24px] border border-[var(--client-border)] bg-[var(--client-panel)] p-5 text-center shadow-sm">
-                  <p className="text-4xl font-black text-[var(--client-secondary)]">{value}</p>
-                  <p className="mt-2 text-xs font-black uppercase tracking-[0.2em] text-[var(--client-primary)]">{label}</p>
+                <div key={label} className="min-w-0 rounded-[16px] border border-[var(--client-border)] bg-[var(--client-panel)] px-2 py-4 text-center shadow-sm sm:rounded-[24px] sm:p-5">
+                  <p className="text-2xl font-black text-[var(--client-secondary)] sm:text-4xl">{value}</p>
+                  <p className="mt-2 text-[0.58rem] font-black uppercase tracking-[0.1em] text-[var(--client-primary)] sm:text-xs sm:tracking-[0.2em]">{label}</p>
                 </div>
               ))}
             </div>
@@ -238,111 +208,62 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mt-16">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+      <section className="mx-auto mt-14 max-w-6xl text-center sm:mt-20">
+        <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--client-primary)]">Built for healthcare hiring</p>
+        <h2 className="mt-4 text-4xl font-black tracking-[-0.05em] text-[var(--client-secondary)] sm:text-5xl">{landing.journeySectionTitle}</h2>
+        <p className="mx-auto mt-4 max-w-2xl text-lg leading-8 text-[var(--client-muted)]">{landing.journeySectionBody}</p>
+      </section>
+
+      <section className="mt-8 grid gap-5 lg:grid-cols-2">
+        <article className="rounded-[28px] border border-[var(--client-border)] bg-[var(--client-panel)] p-6 shadow-[var(--client-shadow)] sm:p-8">
+          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[color-mix(in_srgb,var(--client-primary)_14%,var(--client-panel))] font-black text-[var(--client-primary)]">P</div>
+          <h3 className="mt-6 text-3xl font-black tracking-[-0.04em] text-[var(--client-secondary)]">{landing.professionalJourneyTitle}</h3>
+          <p className="mt-3 max-w-xl leading-7 text-[var(--client-muted)]">{landing.professionalJourneyBody}</p>
+          <ul className="mt-6 grid gap-3 text-sm font-bold text-[var(--client-text)]">
+            <li>✓ Be visible to healthcare employers</li>
+            <li>✓ Discover and apply for suitable opportunities</li>
+            <li>✓ Keep your profile, experience, and documents together</li>
+          </ul>
+          <Link href="/register" className="primary-action mt-7">Create your free account</Link>
+        </article>
+
+        <article className="rounded-[28px] bg-[var(--client-primary)] p-6 text-white shadow-[0_24px_70px_rgba(94,128,120,0.22)] sm:p-8">
+          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-white/15 font-black text-white">E</div>
+          <h3 className="mt-6 text-3xl font-black tracking-[-0.04em]">{landing.employerJourneyTitle}</h3>
+          <p className="mt-3 max-w-xl leading-7 text-white/80">{landing.employerJourneyBody}</p>
+          <ul className="mt-6 grid gap-3 text-sm font-bold text-white">
+            <li>✓ Build and search a relevant healthcare talent pool</li>
+            <li>✓ Publish roles and reach suitable professionals</li>
+            <li>✓ Manage applicants and hiring conversations in one place</li>
+          </ul>
+          <Link href="/register?type=employer" className="secondary-action mt-7 border-white/30 bg-white text-[var(--client-primary)]">Create your free account</Link>
+        </article>
+      </section>
+
+      <section className="mt-10 overflow-hidden rounded-[28px] border border-[var(--client-border)] bg-[var(--client-panel)] p-6 sm:p-8">
+        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div>
-            <h2 className="text-5xl font-black tracking-[-0.055em] text-[var(--client-secondary)]">Featured Opportunities</h2>
-            <p className="mt-3 text-xl text-slate-600">Verified roles from employers hiring through the platform.</p>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--client-primary)]">Free access</p>
+            <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[var(--client-secondary)]">{landing.freeAccessTitle}</h2>
+            <p className="mt-3 leading-7 text-[var(--client-muted)]">{landing.freeAccessBody}</p>
+            <p className="mt-5 text-sm font-bold text-[var(--client-text)]">Already have an account? <Link href="/login" className="text-[var(--client-primary)]">Log in here</Link>.</p>
           </div>
-          <Link href="/jobs" className="text-lg font-black text-[var(--client-primary)]">View all {stats.liveJobs || jobs.length}+ jobs</Link>
-        </div>
-
-        <div className="grid gap-7 lg:grid-cols-2">
-          {featuredJobs.map((job) => {
-            const poster = job.posters?.find((item) => item.contentType?.startsWith('image/'));
-            const closingSoon = job.displayStatus === 'ClosingSoon';
-            return (
-              <article key={job.id} className="group overflow-hidden rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.12)]">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="grid h-16 w-16 place-items-center overflow-hidden rounded-[22px] bg-slate-50">
-                    {poster?.publicUrl ? (
-                      <img src={poster.publicUrl} alt={`${job.title} poster`} className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="h-8 w-8 rounded-lg bg-slate-200" />
-                    )}
-                  </div>
-                  <span className={`rounded-lg px-3 py-2 text-sm font-black uppercase ${closingSoon ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'}`}>
-                    {closingSoon ? 'Closing soon' : job.status || 'Open'}
-                  </span>
-                </div>
-
-                <div className="mt-10">
-                  <h3 className="text-3xl font-black tracking-[-0.04em] text-[var(--client-secondary)]">{job.title}</h3>
-                  <p className="mt-3 text-xl text-slate-600">{job.department || 'Healthcare'} - {job.location || 'Location flexible'}</p>
-                </div>
-
-                <div className="mt-7 flex flex-wrap gap-3">
-                  <span className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700">
-                    {formatMoney(job.salaryMin)}{job.salaryMax ? ` - ${formatMoney(job.salaryMax)}` : ''}
-                  </span>
-                  {job.minimumYearsOfExperience != null && (
-                    <span className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700">
-                      {job.minimumYearsOfExperience}+ years
-                    </span>
-                  )}
-                  {job.requiredProfessionalCategory && (
-                    <span className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700">
-                      {job.requiredProfessionalCategory}
-                    </span>
-                  )}
-                </div>
-
-                <Link href={`/jobs/${job.id}`} className="mt-9 flex h-16 items-center justify-center rounded-[18px] border border-slate-200 text-lg font-black text-[var(--client-secondary)] transition group-hover:border-[var(--client-primary)] group-hover:text-[var(--client-primary)]">
-                  View role
-                </Link>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="mt-16 grid gap-7 xl:grid-cols-[0.95fr_1.05fr]">
-        <div className="rounded-[44px] bg-[var(--client-primary)] p-8 text-white shadow-[0_24px_70px_rgba(94,128,120,0.22)] sm:p-12">
-          <h2 className="max-w-2xl text-5xl font-black leading-[1.04] tracking-[-0.06em]">
-            Hiring for a medical facility? Find vetted talent with a clearer pipeline.
-          </h2>
-          <p className="mt-7 max-w-xl text-xl leading-9 text-white/86">
-            Post openings, configure requirements, manage applicants, invite matching professionals, and keep communication inside the same workspace.
-          </p>
-          <div className="mt-9 flex flex-wrap gap-4">
-            <Link href="/register" className="rounded-[20px] bg-white px-8 py-5 text-lg font-black text-[var(--client-primary)]">Post an opening</Link>
-            <Link href="/feed" className="rounded-[20px] border border-white/30 px-8 py-5 text-lg font-black text-white">Explore Feed</Link>
-          </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          {visibleFeatures.map((feature: any) => (
-            <div key={feature.title} className="rounded-[28px] border border-[var(--client-border)] bg-[var(--client-panel)] p-7 shadow-sm">
-              <div className="mb-7 grid h-12 w-12 place-items-center rounded-[18px] bg-[color-mix(in_srgb,var(--client-primary)_14%,var(--client-panel))] text-lg font-black text-[var(--client-primary)]">{feature.icon || feature.title?.slice(0, 1) || '+'}</div>
-              <h3 className="text-2xl font-black tracking-[-0.04em] text-[var(--client-secondary)]">{feature.title}</h3>
-              <p className="mt-3 leading-7 text-[var(--client-muted)]">{feature.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {secondaryJobs.length > 0 && (
-        <section className="mt-16 rounded-[36px] border border-slate-200 bg-white p-8">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 className="text-4xl font-black tracking-[-0.05em] text-[var(--client-secondary)]">Recently added</h2>
-              <p className="mt-2 text-slate-600">A quick look at fresh marketplace activity.</p>
-            </div>
-            <Link href="/jobs" className="rounded-full bg-[var(--client-primary)] px-5 py-3 font-black text-white">Browse all roles</Link>
-          </div>
-          <div className="mt-6 grid gap-3">
-            {secondaryJobs.map((job) => (
-              <Link key={job.id} href={`/jobs/${job.id}`} className="flex flex-wrap items-center justify-between gap-4 rounded-[22px] border border-slate-200 px-5 py-5 transition hover:border-[var(--client-primary)]">
-                <div>
-                  <p className="text-lg font-black text-[var(--client-secondary)]">{job.title}</p>
-                  <p className="text-slate-600">{job.department || 'Healthcare'} - {job.location || 'Location flexible'}</p>
-                </div>
-                <span className="font-black text-[var(--client-primary)]">View details</span>
-              </Link>
+          <ol className="grid gap-3 sm:grid-cols-3">
+            {[
+              ['1', 'Choose your path', 'Professional or employer'],
+              ['2', 'Register free', 'Create your account'],
+              ['3', 'Start connecting', 'Complete your profile'],
+            ].map(([step, title, copy]) => (
+              <li key={step} className="rounded-[22px] bg-[var(--client-panel-soft)] p-5">
+                <span className="text-sm font-black text-[var(--client-primary)]">{step}</span>
+                <strong className="mt-3 block text-[var(--client-text)]">{title}</strong>
+                <small className="mt-1 block text-[var(--client-muted)]">{copy}</small>
+              </li>
             ))}
-          </div>
-        </section>
-      )}
+          </ol>
+        </div>
+      </section>
+
     </Layout>
   );
 }

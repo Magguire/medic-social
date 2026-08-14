@@ -10,14 +10,16 @@ export const authApi = {
     `${AUTH_API}/login`,
     { email, password, deviceId: await getBrowserDeviceId() },
   ),
-  register: (email: string, password: string, firstName: string, lastName: string, userType = 'Professional', acceptedTerms = false, acceptedPrivacyPolicy = false) =>
+  register: (email: string, password: string, firstName: string, lastName: string, userType = 'Professional', organizationName = '', businessPhoneNumber = '', acceptedTerms = false, acceptedPrivacyPolicy = false) =>
     apiClient.post<AuthResponse>(`${AUTH_API}/register`, {
       email,
       password,
       firstName,
       lastName,
-      phoneNumber: '',
+      phoneNumber: userType === 'Employer' ? businessPhoneNumber : '',
       userType,
+      organizationName: userType === 'Employer' ? organizationName : null,
+      businessPhoneNumber: userType === 'Employer' ? businessPhoneNumber : null,
       acceptedTerms,
       acceptedPrivacyPolicy,
     }),

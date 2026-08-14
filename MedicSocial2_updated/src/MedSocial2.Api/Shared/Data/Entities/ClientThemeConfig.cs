@@ -4,7 +4,7 @@ public class ClientThemeConfig
 {
     public Guid Id { get; set; }
     public string Key { get; set; } = "default";
-    public string PrimaryColor { get; set; } = "#607f75";
+    public string PrimaryColor { get; set; } = "#50b998";
     public string SecondaryColor { get; set; } = "#111827";
     public string AccentColor { get; set; } = "#b66a3c";
     public string BackgroundColor { get; set; } = "#fbf7ef";

@@ -38,7 +38,7 @@ namespace Employer.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
-            var cmd = new RegisterEmployerCommand(dto.Name, dto.FacilityType, dto.ContactEmail, dto.ContactPhone, dto.Address, dto.BusinessRegistrationNumber, dto.KraPin, dto.LicenseNumber);
+            var cmd = new RegisterEmployerCommand(dto.Name, dto.FacilityType, dto.ContactEmail, dto.ContactPhone, dto.IsContactPhonePublic, dto.Address, dto.BusinessRegistrationNumber, dto.KraPin, dto.LicenseNumber);
             var result = await _mediator.Send(cmd);
             return result.IsSuccess ? Ok(result.Value) : BadRequest(new { errors = result.Errors });
         }
@@ -65,7 +65,7 @@ namespace Employer.Api.Controllers
                 dto = dto with { SubscriptionTier = employer.SubscriptionTier, VerificationStatus = employer.VerificationStatus };
             }
 
-            var cmd = new UpdateEmployerCommand(employerId, dto.Name, dto.FacilityType, dto.ContactEmail, dto.ContactPhone, dto.Address, dto.BusinessRegistrationNumber, dto.KraPin, dto.LicenseNumber, dto.SubscriptionTier, dto.VerificationStatus);
+            var cmd = new UpdateEmployerCommand(employerId, dto.Name, dto.FacilityType, dto.ContactEmail, dto.ContactPhone, dto.IsContactPhonePublic, dto.Address, dto.BusinessRegistrationNumber, dto.KraPin, dto.LicenseNumber, dto.SubscriptionTier, dto.VerificationStatus);
             var result = await _mediator.Send(cmd);
             return result.IsSuccess ? Ok(result.Value) : BadRequest(new { errors = result.Errors });
         }
@@ -236,6 +236,7 @@ namespace Employer.Api.Controllers
                         facilityType = row.employer == null ? null : row.employer.FacilityType,
                         contactEmail = row.user.Email,
                         contactPhone = row.employer == null ? row.user.PhoneNumber : row.employer.ContactPhone,
+                        isContactPhonePublic = row.employer != null && row.employer.IsContactPhonePublic,
                         address = row.employer == null ? null : row.employer.Address,
                         subscriptionTier = row.employer == null ? row.user.SubscriptionTier : row.employer.SubscriptionTier,
                         verificationStatus = row.employer == null ? row.user.VerificationStatus : row.employer.VerificationStatus,
@@ -274,6 +275,7 @@ namespace Employer.Api.Controllers
                     e.FacilityType,
                     e.ContactEmail,
                     e.ContactPhone,
+                    e.IsContactPhonePublic,
                     e.Address,
                     e.SubscriptionTier,
                     e.VerificationStatus,
@@ -319,6 +321,7 @@ namespace Employer.Api.Controllers
                     e.FacilityType,
                     e.ContactEmail,
                     e.ContactPhone,
+                    e.IsContactPhonePublic,
                     e.Address,
                     e.SubscriptionTier,
                     e.VerificationStatus,
@@ -409,8 +412,8 @@ namespace Employer.Api.Controllers
         }
     }
 
-    public record RegisterDto(string Name, string FacilityType, string ContactEmail, string? ContactPhone, string? Address, string? BusinessRegistrationNumber, string? KraPin, string? LicenseNumber);
-    public record UpdateEmployerDto(string? Name, string? FacilityType, string? ContactEmail, string? ContactPhone, string? Address, string? BusinessRegistrationNumber, string? KraPin, string? LicenseNumber, string? SubscriptionTier, string? VerificationStatus);
+    public record RegisterDto(string Name, string FacilityType, string ContactEmail, string? ContactPhone, bool IsContactPhonePublic, string? Address, string? BusinessRegistrationNumber, string? KraPin, string? LicenseNumber);
+    public record UpdateEmployerDto(string? Name, string? FacilityType, string? ContactEmail, string? ContactPhone, bool? IsContactPhonePublic, string? Address, string? BusinessRegistrationNumber, string? KraPin, string? LicenseNumber, string? SubscriptionTier, string? VerificationStatus);
     public record UploadEmployerDocumentDto(IFormFile File, string DocumentType);
     public record EmployerTeamMemberUpdateRequest(string RoleName, bool CanManageProfile, bool CanManageSettings, bool CanCreateJobs, bool CanPublishJobs, bool CanViewApplications, bool CanVerifyApplications, bool CanInviteProfessionals, bool CanMessageProfessionals, bool CanManageTeam, bool IsActive);
     public record EmployerTeamMemberRequest(string Email, string RoleName, bool CanManageProfile, bool CanManageSettings, bool CanCreateJobs, bool CanPublishJobs, bool CanViewApplications, bool CanVerifyApplications, bool CanInviteProfessionals, bool CanMessageProfessionals, bool CanManageTeam, bool IsActive, bool CreateAccountIfMissing, string? FirstName, string? LastName, string? PhoneNumber, string? TemporaryPassword) : EmployerTeamMemberUpdateRequest(RoleName, CanManageProfile, CanManageSettings, CanCreateJobs, CanPublishJobs, CanViewApplications, CanVerifyApplications, CanInviteProfessionals, CanMessageProfessionals, CanManageTeam, IsActive);

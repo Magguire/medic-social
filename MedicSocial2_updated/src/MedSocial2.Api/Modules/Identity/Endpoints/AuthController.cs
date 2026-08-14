@@ -36,7 +36,7 @@ namespace Identity.Api.Controllers
                 }
 
                 var command = new RegisterUserCommand(request.Email, request.Password, request.FirstName,
-                    request.LastName, request.PhoneNumber, request.UserType);
+                    request.LastName, request.PhoneNumber, request.UserType, request.OrganizationName, request.BusinessPhoneNumber);
                 var result = await _mediator.Send(command);
 
                 if (!result.IsSuccess)

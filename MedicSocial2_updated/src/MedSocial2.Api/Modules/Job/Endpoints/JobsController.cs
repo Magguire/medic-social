@@ -302,6 +302,7 @@ namespace Job.Api.Controllers
                         job = JobMappings.Map(job, requirementLookup.GetValueOrDefault(job.Id), posterLookup.GetValueOrDefault(job.Id)),
                         employerName = employer?.Name ?? "Unknown employer",
                         employerContactEmail = employer?.ContactEmail,
+                        employerContactPhone = employer?.IsContactPhonePublic == true ? employer.ContactPhone : null,
                         applicationsCount = counts?.Count ?? 0,
                         shortlistedCount = counts?.Shortlisted ?? 0
                     };

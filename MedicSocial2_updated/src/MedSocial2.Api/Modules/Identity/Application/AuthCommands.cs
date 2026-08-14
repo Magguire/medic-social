@@ -20,7 +20,9 @@ namespace Identity.Application.Commands
         string FirstName,
         string LastName,
         string PhoneNumber,
-        string UserType) : IRequest<Result<AuthResponse>>;
+        string UserType,
+        string? OrganizationName,
+        string? BusinessPhoneNumber) : IRequest<Result<AuthResponse>>;
 
     public record RefreshTokenCommand(string RefreshToken, string? DeviceId) : IRequest<Result<AuthResponse>>;
     public record LogoutCommand(string RefreshToken) : IRequest<Result>;
@@ -38,6 +40,19 @@ namespace Identity.Application.Commands
 
         public async Task<Result<AuthResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
+            var requestedUserType = Enum.TryParse<Identity.Domain.UserType>(request.UserType, true, out var parsedUserType)
+                ? parsedUserType
+                : Identity.Domain.UserType.Professional;
+            var organizationName = request.OrganizationName?.Trim() ?? string.Empty;
+            var businessPhoneNumber = request.BusinessPhoneNumber?.Trim() ?? string.Empty;
+            if (requestedUserType == Identity.Domain.UserType.Employer)
+            {
+                if (string.IsNullOrWhiteSpace(organizationName))
+                    return Result<AuthResponse>.Failure("Organization name is required for employer accounts");
+                if (string.IsNullOrWhiteSpace(businessPhoneNumber))
+                    return Result<AuthResponse>.Failure("Business phone number is required for employer accounts");
+            }
+
             // Public self-service users belong to the platform tenant until an org-specific model is introduced.
             if (await _db.Users.AnyAsync(u => u.Email == request.Email && u.TenantId == PlatformTenant.Id, cancellationToken))
             {
@@ -62,8 +77,8 @@ namespace Identity.Application.Commands
                 PasswordHash = PasswordHasher.Hash(request.Password),
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                PhoneNumber = request.PhoneNumber,
-                UserType = Enum.TryParse<Identity.Domain.UserType>(request.UserType, true, out var ut) ? ut : Identity.Domain.UserType.Professional,
+                PhoneNumber = requestedUserType == Identity.Domain.UserType.Employer ? businessPhoneNumber : request.PhoneNumber,
+                UserType = requestedUserType,
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true,
                 Status = Identity.Domain.UserStatus.Active
@@ -75,12 +90,6 @@ namespace Identity.Application.Commands
                 !await _db.EmployerProfiles.AnyAsync(e => e.ContactEmail == request.Email, cancellationToken))
             {
                 var defaultPlan = await _db.SubscriptionPlans.FirstOrDefaultAsync(p => p.IsDefault, cancellationToken);
-                var organizationName = $"{request.FirstName} {request.LastName}".Trim();
-                if (string.IsNullOrWhiteSpace(organizationName))
-                {
-                    organizationName = request.Email.Split('@')[0];
-                }
-
                 _db.EmployerProfiles.Add(new EmployerProfile
                 {
                     Id = Guid.NewGuid(),
@@ -89,7 +98,8 @@ namespace Identity.Application.Commands
                     OrganizationSlug = BuildSlug(organizationName),
                     FacilityType = "Healthcare Facility",
                     ContactEmail = request.Email,
-                    ContactPhone = request.PhoneNumber,
+                    ContactPhone = businessPhoneNumber,
+                    IsContactPhonePublic = false,
                     SubscriptionTier = defaultPlan?.Slug ?? "free",
                     VerificationStatus = "Pending",
                     CreatedAt = DateTime.UtcNow

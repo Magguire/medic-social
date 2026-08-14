@@ -8,7 +8,7 @@ import { store } from '../store';
 import { contentApi } from '../lib/contentApi';
 
 const defaultClientTheme = {
-  primaryColor: '#607f75',
+  primaryColor: '#50b998',
   secondaryColor: '#111827',
   accentColor: '#b66a3c',
   backgroundColor: '#fbf7ef',

@@ -11,6 +11,7 @@ namespace Employer.Domain
         public string FacilityType { get; set; } = "Healthcare Facility";
         public string ContactEmail { get; set; } = string.Empty;
         public string? ContactPhone { get; set; }
+        public bool IsContactPhonePublic { get; set; }
         public string? Address { get; set; }
         public string SubscriptionTier { get; set; } = "Free";
         public string VerificationStatus { get; set; } = "Pending";

@@ -141,18 +141,18 @@ export default function ProfessionalsPage() {
           </select>
           <span>{filteredItems.length} of {items.length} professionals</span>
         </div>
-        <table className="table-shell">
+        <table className="table-shell record-table">
           <thead><tr><th>Account</th><th>Profile</th><th>Category</th><th>Experience</th><th>Last login</th><th>Verification</th><th>Actions</th></tr></thead>
           <tbody>
             {filteredItems.map((item) => (
               <tr key={item.userId}>
-                <td><strong>{item.fullName || 'Professional'}</strong><div className="table-note">{item.email}</div></td>
-                <td><span className={`badge ${item.hasCompletedProfile ? 'verified' : 'pending'}`}>{item.hasCompletedProfile ? 'Complete' : 'Not completed'}</span></td>
-                <td>{item.professionalCategory || 'Not set'}</td>
-                <td>{item.yearsOfExperience} years</td>
-                <td>{item.lastLoginAt ? new Date(item.lastLoginAt).toLocaleString() : 'Never'}</td>
-                <td><span className={`badge ${String(item.verificationStatus).toLowerCase()}`}>{item.verificationStatus}</span></td>
-                <td>
+                <td data-label="Account"><strong>{item.fullName || 'Professional'}</strong><div className="table-note">{item.email}</div></td>
+                <td data-label="Profile"><span className={`badge ${item.hasCompletedProfile ? 'verified' : 'pending'}`}>{item.hasCompletedProfile ? 'Complete' : 'Not completed'}</span></td>
+                <td data-label="Category">{item.professionalCategory || 'Not set'}</td>
+                <td data-label="Experience">{item.yearsOfExperience} years</td>
+                <td data-label="Last login">{item.lastLoginAt ? new Date(item.lastLoginAt).toLocaleString() : 'Never'}</td>
+                <td data-label="Verification"><span className={`badge ${String(item.verificationStatus).toLowerCase()}`}>{item.verificationStatus}</span></td>
+                <td data-label="Actions">
                   <button className="btn-secondary" onClick={() => setActionItem(item)}>Actions</button>
                 </td>
               </tr>

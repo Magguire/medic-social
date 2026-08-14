@@ -201,6 +201,7 @@ export interface EmployerProfile {
   facilityType: string;
   contactEmail: string;
   contactPhone?: string | null;
+  isContactPhonePublic: boolean;
   address?: string | null;
   subscriptionTier: string;
   verificationStatus: string;

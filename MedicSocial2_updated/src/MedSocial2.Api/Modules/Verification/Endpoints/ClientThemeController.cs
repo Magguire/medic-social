@@ -72,7 +72,7 @@ public class ClientThemeController : ControllerBase
                 _db.ClientThemeConfigs.Add(entity);
             }
 
-            entity.PrimaryColor = NormalizeColor(request.PrimaryColor, "#607f75");
+            entity.PrimaryColor = NormalizeColor(request.PrimaryColor, "#50b998");
             entity.SecondaryColor = NormalizeColor(request.SecondaryColor, "#111827");
             entity.AccentColor = NormalizeColor(request.AccentColor, "#b66a3c");
             entity.BackgroundColor = NormalizeColor(request.BackgroundColor, "#fbf7ef");
@@ -127,7 +127,7 @@ public class ClientThemeController : ControllerBase
     private static ClientThemeConfigDto DefaultTheme()
     {
         return new ClientThemeConfigDto(
-            "#607f75",
+            "#50b998",
             "#111827",
             "#b66a3c",
             "#fbf7ef",

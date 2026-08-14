@@ -206,6 +206,14 @@ namespace Shared.Data
                 entity.Property(item => item.SecondaryCallToActionUrl).HasMaxLength(500);
                 entity.Property(item => item.EmployerCalloutTitle).HasMaxLength(500);
                 entity.Property(item => item.EmployerCalloutBody).HasMaxLength(1200);
+                entity.Property(item => item.JourneySectionTitle).HasMaxLength(300);
+                entity.Property(item => item.JourneySectionBody).HasMaxLength(800);
+                entity.Property(item => item.ProfessionalJourneyTitle).HasMaxLength(240);
+                entity.Property(item => item.ProfessionalJourneyBody).HasMaxLength(1000);
+                entity.Property(item => item.EmployerJourneyTitle).HasMaxLength(240);
+                entity.Property(item => item.EmployerJourneyBody).HasMaxLength(1000);
+                entity.Property(item => item.FreeAccessTitle).HasMaxLength(240);
+                entity.Property(item => item.FreeAccessBody).HasMaxLength(800);
             });
 
             modelBuilder.Entity<JobEngagementType>(entity =>

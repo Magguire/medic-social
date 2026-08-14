@@ -166,6 +166,29 @@ export default function Layout({ children }: PropsWithChildren) {
     }
   }, [router, user?.mustChangePassword]);
 
+  useEffect(() => {
+    const closeMenus = () => {
+      setMenuOpen(false);
+      setAccountOpen(false);
+      setNotificationsOpen(false);
+    };
+    router.events.on('routeChangeComplete', closeMenus);
+    return () => router.events.off('routeChangeComplete', closeMenus);
+  }, [router.events]);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    document.body.classList.add('drawer-open');
+    return () => {
+      document.removeEventListener('keydown', closeOnEscape);
+      document.body.classList.remove('drawer-open');
+    };
+  }, [menuOpen]);
+
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme);
@@ -193,7 +216,17 @@ export default function Layout({ children }: PropsWithChildren) {
     <div className="min-h-screen">
       <header className="client-header sticky top-0 z-30 border-b backdrop-blur">
         <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-4 px-4 py-3 sm:px-5 lg:px-6">
-          <div className="flex items-center gap-8">
+          <div className="client-header-leading flex items-center gap-8">
+            <button
+              className="hamburger-button"
+              type="button"
+              aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={menuOpen}
+              aria-controls={showWorkspace ? 'workspace-navigation' : 'public-navigation-drawer'}
+              onClick={() => setMenuOpen((current) => !current)}
+            >
+              <span aria-hidden="true">{menuOpen ? '×' : '☰'}</span>
+            </button>
             <Link href="/" className="brand-lockup">
               <div className="brand-mark">+</div>
               <div>
@@ -201,8 +234,6 @@ export default function Layout({ children }: PropsWithChildren) {
                 <p className="brand-subtitle">{brand.tagline}</p>
               </div>
             </Link>
-            {showWorkspace && <button className="hamburger-button" type="button" onClick={() => setMenuOpen((current) => !current)}>☰</button>}
-
             <nav className="hidden items-center gap-2 lg:flex">
               {(isAuthenticated ? navigation : publicNavigation).map((item) => (
                 <Link
@@ -225,7 +256,7 @@ export default function Layout({ children }: PropsWithChildren) {
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="client-header-actions flex items-center gap-3">
             {isAuthenticated && user ? (
               <div className="account-menu-wrap">
                 <button className="notification-trigger" type="button" onClick={() => setNotificationsOpen((current) => !current)}>
@@ -278,9 +309,31 @@ export default function Layout({ children }: PropsWithChildren) {
         </div>
       </header>
 
+      {!showWorkspace && (
+        <aside id="public-navigation-drawer" className={`public-navigation-drawer ${menuOpen ? 'open' : ''}`} aria-hidden={!menuOpen}>
+          <div className="drawer-heading">
+            <strong>Navigation</strong>
+            <button type="button" aria-label="Close navigation menu" onClick={() => setMenuOpen(false)}>×</button>
+          </div>
+          <nav>
+            {publicNavigation.map((item) => (
+              <Link key={item.href} href={item.href} className={isActive(item.href) ? 'active' : ''}>{item.label}</Link>
+            ))}
+          </nav>
+          {!isAuthenticated && (
+            <div className="drawer-account-actions">
+              <Link href="/login" className="secondary-action">Login</Link>
+              <Link href="/register" className="primary-action">Join Network</Link>
+              <button className="secondary-action" type="button" onClick={toggleTheme}>{theme === 'dark' ? 'Use light mode' : 'Use dark mode'}</button>
+            </div>
+          )}
+        </aside>
+      )}
+      {!showWorkspace && menuOpen && <button className="drawer-scrim public-drawer-scrim" aria-label="Close menu" onClick={() => setMenuOpen(false)} />}
+
       {showWorkspace ? (
         <div className="workspace-shell mx-auto grid max-w-[92rem] gap-5 px-4 py-5 sm:px-5 lg:grid-cols-[248px_1fr] lg:px-6">
-          <aside className={`workspace-sidebar ${menuOpen ? 'open' : ''}`}>
+          <aside id="workspace-navigation" className={`workspace-sidebar ${menuOpen ? 'open' : ''}`}>
             <div className="sidebar-user-card">
               <div className="sidebar-avatar">{displayName.slice(0, 1).toUpperCase()}</div>
               <div>

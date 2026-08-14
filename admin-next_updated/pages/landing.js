@@ -37,6 +37,14 @@ const defaultLanding = {
   featureCards: [],
   employerCalloutTitle: 'Hiring for a medical facility? Find vetted talent with a clearer pipeline.',
   employerCalloutBody: 'Post openings, configure requirements, manage applicants, invite matching professionals, and keep communication inside the same workspace.',
+  journeySectionTitle: 'One platform. Two clear paths.',
+  journeySectionBody: 'Create a free account to connect with the people and opportunities that move healthcare forward.',
+  professionalJourneyTitle: 'For healthcare professionals',
+  professionalJourneyBody: 'Build one trusted profile, discover suitable roles, and connect directly with potential employers.',
+  employerJourneyTitle: 'For employers',
+  employerJourneyBody: 'Grow a searchable talent pool, publish opportunities, and reach healthcare professionals ready for their next role.',
+  freeAccessTitle: 'Start free in three simple steps',
+  freeAccessBody: 'Choose your account type, create your free account, then complete your profile and start connecting.',
   isPublished: true,
 };
 
@@ -144,6 +152,27 @@ export default function LandingEditorPage() {
           <div className="form-grid spacious-form">
             <label className="field-label">Brand name<input className="input" value={form.brandName || ''} onChange={(event) => updateField('brandName', event.target.value)} /></label>
             <label className="field-label">Tagline<input className="input" value={form.brandTagline || ''} onChange={(event) => updateField('brandTagline', event.target.value)} /></label>
+          </div>
+        </section>
+
+        <section className="admin-card">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Audience journeys</p>
+              <h2>Why visitors should join</h2>
+              <p>Keep this section brief. It appears immediately below the public hero.</p>
+            </div>
+          </div>
+
+          <div className="form-grid spacious-form">
+            <label className="field-label full-span">Section title<input className="input" value={form.journeySectionTitle || ''} onChange={(event) => updateField('journeySectionTitle', event.target.value)} /></label>
+            <label className="field-label full-span">Section introduction<textarea className="input textarea" value={form.journeySectionBody || ''} onChange={(event) => updateField('journeySectionBody', event.target.value)} /></label>
+            <label className="field-label">Professional journey title<input className="input" value={form.professionalJourneyTitle || ''} onChange={(event) => updateField('professionalJourneyTitle', event.target.value)} /></label>
+            <label className="field-label">Employer journey title<input className="input" value={form.employerJourneyTitle || ''} onChange={(event) => updateField('employerJourneyTitle', event.target.value)} /></label>
+            <label className="field-label">Professional benefits<textarea className="input textarea" value={form.professionalJourneyBody || ''} onChange={(event) => updateField('professionalJourneyBody', event.target.value)} /></label>
+            <label className="field-label">Employer benefits<textarea className="input textarea" value={form.employerJourneyBody || ''} onChange={(event) => updateField('employerJourneyBody', event.target.value)} /></label>
+            <label className="field-label">Free access title<input className="input" value={form.freeAccessTitle || ''} onChange={(event) => updateField('freeAccessTitle', event.target.value)} /></label>
+            <label className="field-label">Free access guidance<textarea className="input textarea" value={form.freeAccessBody || ''} onChange={(event) => updateField('freeAccessBody', event.target.value)} /></label>
           </div>
         </section>
 

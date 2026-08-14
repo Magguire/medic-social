@@ -135,7 +135,7 @@ export default function JobsPage() {
       <details className="collapsible" open>
         <summary>Search filters</summary>
         <div className="collapsible-body">
-          <form className="form-grid" onSubmit={applyFilters}>
+          <form className="form-grid filter-form-grid" onSubmit={applyFilters}>
             <input className="input" placeholder="Search title, location, department" value={filters.q} onChange={(event) => setFilters({ ...filters, q: event.target.value })} />
             <select className="select" value={filters.category} onChange={(event) => setFilters({ ...filters, category: event.target.value })}>
               <option value="">All professional categories</option>
@@ -166,7 +166,7 @@ export default function JobsPage() {
             </select>
             <div className="button-row">
               <button className="btn-primary" type="submit">Apply filters</button>
-              <button className="btn-secondary" type="button" onClick={clearFilters}>Clear</button>
+              <button className="btn-secondary filter-clear-action" type="button" onClick={clearFilters}>Clear</button>
             </div>
           </form>
         </div>

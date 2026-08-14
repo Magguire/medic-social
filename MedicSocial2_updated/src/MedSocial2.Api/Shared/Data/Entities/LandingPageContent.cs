@@ -19,6 +19,14 @@ public class LandingPageContent
     public string FeatureCardsJson { get; set; } = "[]";
     public string EmployerCalloutTitle { get; set; } = string.Empty;
     public string EmployerCalloutBody { get; set; } = string.Empty;
+    public string JourneySectionTitle { get; set; } = string.Empty;
+    public string JourneySectionBody { get; set; } = string.Empty;
+    public string ProfessionalJourneyTitle { get; set; } = string.Empty;
+    public string ProfessionalJourneyBody { get; set; } = string.Empty;
+    public string EmployerJourneyTitle { get; set; } = string.Empty;
+    public string EmployerJourneyBody { get; set; } = string.Empty;
+    public string FreeAccessTitle { get; set; } = string.Empty;
+    public string FreeAccessBody { get; set; } = string.Empty;
     public bool IsPublished { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }

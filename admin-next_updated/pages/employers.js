@@ -166,18 +166,18 @@ export default function EmployersPage() {
           <input className="input" placeholder="Search employers by facility, type, subscription, or email" value={search} onChange={(event) => setSearch(event.target.value)} />
           <span>{filteredItems.length} of {data.items.length} employers</span>
         </div>
-        <table className="table-shell">
+        <table className="table-shell record-table">
           <thead><tr><th>Account</th><th>Profile</th><th>Facility type</th><th>Subscription</th><th>Last login</th><th>Verification</th><th>Actions</th></tr></thead>
           <tbody>
             {filteredItems.map((item) => (
               <tr key={item.userId}>
-                <td><strong>{item.name || 'Employer'}</strong><div className="table-note">{item.contactEmail}</div></td>
-                <td><span className={`badge ${item.hasCompletedProfile ? 'verified' : 'pending'}`}>{item.hasCompletedProfile ? 'Complete' : 'Not completed'}</span></td>
-                <td>{item.facilityType || 'Not set'}</td>
-                <td>{item.subscriptionTier}</td>
-                <td>{item.lastLoginAt ? new Date(item.lastLoginAt).toLocaleString() : 'Never'}</td>
-                <td><span className={`badge ${String(item.verificationStatus).toLowerCase()}`}>{item.verificationStatus}</span></td>
-                <td>
+                <td data-label="Account"><strong>{item.name || 'Employer'}</strong><div className="table-note">{item.contactEmail}</div></td>
+                <td data-label="Profile"><span className={`badge ${item.hasCompletedProfile ? 'verified' : 'pending'}`}>{item.hasCompletedProfile ? 'Complete' : 'Not completed'}</span></td>
+                <td data-label="Facility type">{item.facilityType || 'Not set'}</td>
+                <td data-label="Subscription">{item.subscriptionTier}</td>
+                <td data-label="Last login">{item.lastLoginAt ? new Date(item.lastLoginAt).toLocaleString() : 'Never'}</td>
+                <td data-label="Verification"><span className={`badge ${String(item.verificationStatus).toLowerCase()}`}>{item.verificationStatus}</span></td>
+                <td data-label="Actions">
                   <button className="btn-secondary" onClick={() => setActionItem(item)}>Actions</button>
                 </td>
               </tr>

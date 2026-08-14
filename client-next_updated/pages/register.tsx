@@ -15,7 +15,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const { register, isLoading } = useAuth();
   const [accountType, setAccountType] = useState<'Professional' | 'Employer'>('Professional');
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', organizationName: '', businessPhoneNumber: '', password: '', confirmPassword: '' });
   const [agreements, setAgreements] = useState({ privacy: false, terms: false });
   const [legalPages, setLegalPages] = useState(defaultLegal);
   const [activeLegal, setActiveLegal] = useState<LegalSlug | null>(null);
@@ -56,7 +56,11 @@ export default function RegisterPage() {
       setError('You must accept the Privacy Policy and Terms and Conditions before creating an account.');
       return;
     }
-    const result = await register(form.email, form.password, form.firstName, form.lastName, accountType, agreements.terms, agreements.privacy);
+    if (accountType === 'Employer' && (!form.organizationName.trim() || !form.businessPhoneNumber.trim())) {
+      setError('Organization name and business phone number are required for employer accounts.');
+      return;
+    }
+    const result = await register(form.email, form.password, form.firstName, form.lastName, accountType, form.organizationName, form.businessPhoneNumber, agreements.terms, agreements.privacy);
     if (!result.success) {
       setError(result.error || 'Registration failed.');
       return;
@@ -65,9 +69,9 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-6xl items-center justify-center px-4 py-10">
-      <div className="grid w-full overflow-hidden rounded-[32px] border border-[var(--client-border)] bg-[var(--client-panel)] shadow-[0_35px_90px_rgba(15,23,42,0.12)] lg:grid-cols-[0.95fr_1.05fr]">
-        <aside className="bg-[linear-gradient(140deg,var(--client-secondary),var(--client-primary))] px-8 py-10 text-white">
+    <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-6xl items-center justify-center py-4 sm:px-4 sm:py-10">
+      <div className="grid w-full overflow-hidden rounded-[22px] border border-[var(--client-border)] bg-[var(--client-panel)] shadow-[0_35px_90px_rgba(15,23,42,0.12)] sm:rounded-[32px] lg:grid-cols-[0.95fr_1.05fr]">
+        <aside className="bg-[linear-gradient(140deg,var(--client-secondary),var(--client-primary))] px-5 py-7 text-white sm:px-8 sm:py-10">
           <p className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">Registration</p>
           <h1 className="mt-4 text-4xl font-black tracking-tight">Create the account that matches your role in the platform.</h1>
           <div className="mt-6 space-y-4 text-sm text-white/82">
@@ -76,7 +80,7 @@ export default function RegisterPage() {
           </div>
         </aside>
 
-        <main className="px-8 py-10">
+        <main className="px-5 py-7 sm:px-8 sm:py-10">
           <div className="flex gap-3 rounded-2xl bg-slate-100 p-2">
             {(['Professional', 'Employer'] as const).map((option) => (
               <button key={option} className={`flex-1 rounded-2xl px-4 py-3 text-sm font-semibold transition ${accountType === option ? 'bg-[var(--client-panel)] text-[var(--client-primary)] shadow-sm' : 'text-slate-500'}`} onClick={() => setAccountType(option)} type="button">
@@ -98,8 +102,20 @@ export default function RegisterPage() {
             </div>
             <div>
               <label className="mb-2 block text-sm font-semibold text-[var(--client-text)]">Email</label>
-              <input className="input-shell" type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} />
+              <input className="input-shell" type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} required />
             </div>
+            {accountType === 'Employer' && (
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-[var(--client-text)]">Organization name</label>
+                  <input className="input-shell" value={form.organizationName} onChange={(event) => setForm((current) => ({ ...current, organizationName: event.target.value }))} placeholder="Facility or organization name" required />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-[var(--client-text)]">Business phone number</label>
+                  <input className="input-shell" type="tel" value={form.businessPhoneNumber} onChange={(event) => setForm((current) => ({ ...current, businessPhoneNumber: event.target.value }))} placeholder="Include country or area code" required />
+                </div>
+              </div>
+            )}
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[var(--client-text)]">Password</label>

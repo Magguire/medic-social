@@ -212,6 +212,9 @@ namespace MedSocial2.Api.Shared.Data.Migrations
                     b.Property<string>("ContactPhone")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsContactPhonePublic")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -1858,9 +1861,29 @@ namespace MedSocial2.Api.Shared.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("EmployerJourneyBody")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("EmployerJourneyTitle")
+                        .IsRequired()
+                        .HasMaxLength(240)
+                        .HasColumnType("nvarchar(240)");
+
                     b.Property<string>("FeatureCardsJson")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FreeAccessBody")
+                        .IsRequired()
+                        .HasMaxLength(800)
+                        .HasColumnType("nvarchar(800)");
+
+                    b.Property<string>("FreeAccessTitle")
+                        .IsRequired()
+                        .HasMaxLength(240)
+                        .HasColumnType("nvarchar(240)");
 
                     b.Property<string>("Headline")
                         .IsRequired()
@@ -1870,6 +1893,16 @@ namespace MedSocial2.Api.Shared.Data.Migrations
                     b.Property<string>("HeroSlidesJson")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JourneySectionBody")
+                        .IsRequired()
+                        .HasMaxLength(800)
+                        .HasColumnType("nvarchar(800)");
+
+                    b.Property<string>("JourneySectionTitle")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("HighlightText")
                         .IsRequired()
@@ -1896,6 +1929,16 @@ namespace MedSocial2.Api.Shared.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ProfessionalJourneyBody")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ProfessionalJourneyTitle")
+                        .IsRequired()
+                        .HasMaxLength(240)
+                        .HasColumnType("nvarchar(240)");
 
                     b.Property<string>("SecondaryCallToActionText")
                         .IsRequired()

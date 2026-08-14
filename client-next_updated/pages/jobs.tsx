@@ -20,9 +20,22 @@ export default function JobsPage() {
   const [verificationFilter, setVerificationFilter] = useState('');
   const [salaryMin, setSalaryMin] = useState('');
   const [salaryMax, setSalaryMax] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [options, setOptions] = useState<{ categories: Array<{ name: string; slug: string }>; locations: string[]; departments: string[]; engagementTypes: Array<{ name: string; slug: string; allowsShiftPattern: boolean }>; metrics: any } | null>(null);
   const [loading, setLoading] = useState(true);
   const pageSize = 9;
+
+  useEffect(() => {
+    const phoneViewport = window.matchMedia('(max-width: 480px)');
+    const syncFilterVisibility = (event?: MediaQueryListEvent) => {
+      const isPhone = event ? event.matches : phoneViewport.matches;
+      setFiltersOpen(!isPhone);
+    };
+
+    syncFilterVisibility();
+    phoneViewport.addEventListener('change', syncFilterVisibility);
+    return () => phoneViewport.removeEventListener('change', syncFilterVisibility);
+  }, []);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -109,10 +122,15 @@ export default function JobsPage() {
         </div>
       </section>
 
-      <details className="filter-shell mt-6" open>
-        <summary>Search and filter jobs</summary>
+      <details className="filter-shell mt-6" open={filtersOpen} onToggle={(event) => setFiltersOpen(event.currentTarget.open)}>
+        <summary>
+          <span className="jobs-filter-toggle-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false"><path d="M4 6h16M7 12h10m-7 6h4" /></svg>
+          </span>
+          <span className="jobs-filter-summary-label">Search and filter jobs</span>
+        </summary>
         <div className="filter-body">
-          <div className="grid gap-3 md:grid-cols-[1.2fr_1fr_1fr]">
+          <div className="jobs-filter-grid">
             <input className="input-shell" value={searchTerm} onChange={(event) => { setSearchTerm(event.target.value); setPage(1); }} placeholder="Search title, facility, department, description" />
             <select className="input-shell" value={categoryFilter} onChange={(event) => { setCategoryFilter(event.target.value); setPage(1); }}>
               <option value="">All categories</option>
@@ -122,8 +140,6 @@ export default function JobsPage() {
               <option value="">All departments</option>
               {options?.departments?.map((department) => <option key={department} value={department}>{department}</option>)}
             </select>
-          </div>
-          <div className="mt-3 grid gap-3 md:grid-cols-[1fr_1fr_1fr_1fr_1fr_auto]">
             <select className="input-shell" value={engagementTypeFilter} onChange={(event) => { setEngagementTypeFilter(event.target.value); setPage(1); }}>
               <option value="">All job types</option>
               {options?.engagementTypes?.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}
@@ -139,7 +155,7 @@ export default function JobsPage() {
             </select>
             <input className="input-shell" type="number" value={salaryMin} onChange={(event) => { setSalaryMin(event.target.value); setPage(1); }} placeholder="Minimum salary" />
             <input className="input-shell" type="number" value={salaryMax} onChange={(event) => { setSalaryMax(event.target.value); setPage(1); }} placeholder="Maximum salary" />
-            <button className="secondary-action h-12" onClick={clearFilters}>Clear</button>
+            <button className="secondary-action filter-clear-action" type="button" onClick={clearFilters}>Clear</button>
           </div>
         </div>
       </details>

@@ -89,6 +89,14 @@ public class LandingPageController : ControllerBase
             entity.FeatureCardsJson = JsonSerializer.Serialize(request.FeatureCards ?? [], JsonOptions);
             entity.EmployerCalloutTitle = request.EmployerCalloutTitle.Trim();
             entity.EmployerCalloutBody = request.EmployerCalloutBody.Trim();
+            entity.JourneySectionTitle = Clean(request.JourneySectionTitle, "One platform. Two clear paths.");
+            entity.JourneySectionBody = Clean(request.JourneySectionBody, "Create a free account to connect with the people and opportunities that move healthcare forward.");
+            entity.ProfessionalJourneyTitle = Clean(request.ProfessionalJourneyTitle, "For healthcare professionals");
+            entity.ProfessionalJourneyBody = Clean(request.ProfessionalJourneyBody, "Build one trusted profile, discover suitable roles, and connect directly with potential employers.");
+            entity.EmployerJourneyTitle = Clean(request.EmployerJourneyTitle, "For employers");
+            entity.EmployerJourneyBody = Clean(request.EmployerJourneyBody, "Grow a searchable talent pool, publish opportunities, and reach healthcare professionals ready for their next role.");
+            entity.FreeAccessTitle = Clean(request.FreeAccessTitle, "Start free in three simple steps");
+            entity.FreeAccessBody = Clean(request.FreeAccessBody, "Choose your account type, create your free account, then complete your profile and start connecting.");
             entity.IsPublished = request.IsPublished;
             entity.UpdatedAt = DateTime.UtcNow;
 
@@ -119,6 +127,14 @@ public class LandingPageController : ControllerBase
             DeserializeList<LandingFeatureCardDto>(entity.FeatureCardsJson),
             entity.EmployerCalloutTitle,
             entity.EmployerCalloutBody,
+            Clean(entity.JourneySectionTitle, "One platform. Two clear paths."),
+            Clean(entity.JourneySectionBody, "Create a free account to connect with the people and opportunities that move healthcare forward."),
+            Clean(entity.ProfessionalJourneyTitle, "For healthcare professionals"),
+            Clean(entity.ProfessionalJourneyBody, "Build one trusted profile, discover suitable roles, and connect directly with potential employers."),
+            Clean(entity.EmployerJourneyTitle, "For employers"),
+            Clean(entity.EmployerJourneyBody, "Grow a searchable talent pool, publish opportunities, and reach healthcare professionals ready for their next role."),
+            Clean(entity.FreeAccessTitle, "Start free in three simple steps"),
+            Clean(entity.FreeAccessBody, "Choose your account type, create your free account, then complete your profile and start connecting."),
             entity.IsPublished,
             entity.UpdatedAt ?? entity.CreatedAt);
     }
@@ -191,6 +207,14 @@ public class LandingPageController : ControllerBase
             ],
             "Hiring for a medical facility? Find vetted talent with a clearer pipeline.",
             "Post openings, configure requirements, manage applicants, invite matching professionals, and keep communication inside the same workspace.",
+            "One platform. Two clear paths.",
+            "Create a free account to connect with the people and opportunities that move healthcare forward.",
+            "For healthcare professionals",
+            "Build one trusted profile, discover suitable roles, and connect directly with potential employers.",
+            "For employers",
+            "Grow a searchable talent pool, publish opportunities, and reach healthcare professionals ready for their next role.",
+            "Start free in three simple steps",
+            "Choose your account type, create your free account, then complete your profile and start connecting.",
             true,
             DateTime.UtcNow);
     }
@@ -215,6 +239,14 @@ public record LandingPageContentDto(
     List<LandingFeatureCardDto> FeatureCards,
     string EmployerCalloutTitle,
     string EmployerCalloutBody,
+    string JourneySectionTitle,
+    string JourneySectionBody,
+    string ProfessionalJourneyTitle,
+    string ProfessionalJourneyBody,
+    string EmployerJourneyTitle,
+    string EmployerJourneyBody,
+    string FreeAccessTitle,
+    string FreeAccessBody,
     bool IsPublished,
     DateTime UpdatedAt);
 

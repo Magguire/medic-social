@@ -10,7 +10,7 @@
   --client-border: rgba(226, 232, 240, 0.7);
   --client-shadow: 0 24px 70px rgba(82, 53, 31, 0.1);
   --client-input: #ffffff;
-  --client-primary: #607f75;
+  --client-primary: #50b998;
   --client-secondary: #111827;
   --client-accent: #b66a3c;
   --brand-warm: var(--client-accent);
@@ -164,8 +164,14 @@ body {
 .input-shell {
   height: 3rem;
   padding: 0 1rem;
-  border-radius: 0.75rem;
-  appearance: none;
+  border-radius: 13px;
+  box-sizing: border-box;
+  appearance: auto;
+}
+
+select.input-shell {
+  appearance: auto;
+  padding-right: 0.75rem;
 }
 
 .text-shell {
@@ -187,6 +193,10 @@ body {
 }
 
 .filter-shell summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   cursor: pointer;
   padding: 1.25rem 1.5rem;
   color: var(--client-text);
@@ -199,8 +209,69 @@ body {
 }
 
 .filter-body {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   border-top: 1px solid var(--client-border);
-  padding: 1.5rem;
+  padding: 1.75rem;
+}
+
+.jobs-filter-grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.jobs-filter-grid > * {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.filter-clear-action {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  height: 3rem;
+  min-height: 3rem;
+  box-sizing: border-box;
+  align-self: stretch;
+  justify-self: stretch;
+  border-color: #b66a3c;
+  background: #b66a3c;
+  color: #ffffff;
+  padding-block: 0;
+}
+
+.filter-clear-action:hover {
+  border-color: color-mix(in srgb, #b66a3c 84%, #000 16%);
+  background: color-mix(in srgb, #b66a3c 84%, #000 16%);
+  color: #ffffff;
+}
+
+.jobs-filter-toggle-icon {
+  display: none;
+  flex: 0 0 auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--client-primary) 14%, var(--client-panel));
+  color: var(--client-primary);
+}
+
+.jobs-filter-summary-label {
+  flex: 1 1 auto;
+}
+
+.jobs-filter-toggle-icon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
 }
 
 .pagination-meta {
@@ -1711,5 +1782,394 @@ body {
   .feed-composer-actions .feed-primary,
   .feed-tool {
     width: 100%;
+  }
+}
+
+/* Responsive application shell: phone, tablet, small laptop, desktop and XL. */
+body.drawer-open {
+  overflow: hidden;
+}
+
+.public-navigation-drawer {
+  display: none;
+}
+
+.drawer-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--client-border);
+}
+
+.drawer-heading strong {
+  font-size: 1.1rem;
+}
+
+.drawer-heading button {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid var(--client-border);
+  border-radius: 0.9rem;
+  background: var(--client-panel-soft);
+  color: var(--client-text);
+  font-size: 1.5rem;
+}
+
+.drawer-account-actions {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+  .client-header nav.lg\:flex {
+    display: none;
+  }
+
+  .client-header-leading {
+    min-width: 0;
+    gap: 0.75rem;
+  }
+
+  .hamburger-button {
+    display: inline-grid;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    place-items: center;
+    padding: 0.45rem;
+    font-size: 1.2rem;
+  }
+
+  .public-navigation-drawer {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 90;
+    width: min(330px, 88vw);
+    flex-direction: column;
+    overflow-y: auto;
+    border-right: 1px solid var(--client-border);
+    border-radius: 0 28px 28px 0;
+    background: var(--client-panel);
+    box-shadow: var(--client-shadow);
+    padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .public-navigation-drawer.open {
+    display: flex;
+  }
+
+  .public-navigation-drawer nav {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .public-navigation-drawer nav a {
+    border-radius: 1rem;
+    padding: 0.9rem 1rem;
+    color: var(--client-muted);
+    font-weight: 800;
+  }
+
+  .public-navigation-drawer nav a.active,
+  .public-navigation-drawer nav a:hover,
+  .public-navigation-drawer nav a:focus-visible {
+    background: color-mix(in srgb, var(--client-primary) 16%, var(--client-panel));
+    color: var(--client-primary);
+  }
+
+  .workspace-shell > main {
+    min-width: 0;
+  }
+
+  .surface-card {
+    border-radius: 22px;
+  }
+}
+
+/* Tablet landscape keeps a full, persistent workspace sidebar. */
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+  body.drawer-open {
+    overflow: auto;
+  }
+
+  .workspace-shell {
+    grid-template-columns: 220px minmax(0, 1fr) !important;
+    gap: 1rem;
+  }
+
+  .workspace-sidebar,
+  .workspace-sidebar.open {
+    display: block;
+    position: sticky;
+    inset: auto;
+    top: 5.5rem;
+    width: auto;
+    max-height: calc(100vh - 6.5rem);
+    border-radius: 22px;
+  }
+
+  .workspace-sidebar + .drawer-scrim,
+  .workspace-shell .drawer-scrim {
+    display: none;
+  }
+
+  .client-header .hamburger-button {
+    display: none;
+  }
+
+  .workspace-link {
+    padding: 0.7rem 0.75rem;
+    font-size: 0.82rem;
+  }
+}
+
+/* Small laptops use denser spacing while retaining the desktop composition. */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .workspace-shell,
+  .client-header > div,
+  main,
+  footer {
+    padding-inline: 1rem !important;
+  }
+
+  .surface-card {
+    padding: 1.25rem;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+  }
+
+  .feed-card,
+  .feed-composer,
+  .feed-post,
+  .feed-hero {
+    padding: 1.1rem;
+  }
+
+  .filter-body {
+    padding: 1.35rem;
+  }
+
+  .jobs-filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filter-clear-action {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .client-header-actions > .secondary-action,
+  .client-header-actions > .public-join-action {
+    display: none;
+  }
+
+  .workspace-sidebar {
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .notification-menu {
+    position: fixed;
+    top: 4.75rem;
+    right: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+    max-height: calc(100dvh - 6rem);
+    overflow-y: auto;
+  }
+
+  .account-menu {
+    position: fixed;
+    top: 4.75rem;
+    right: 0.75rem;
+    left: 0.75rem;
+    min-width: 0;
+  }
+
+  .feed-shell,
+  .social-shell,
+  .feed-hero,
+  .feed-grid.two {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .feed-rail,
+  .social-panel {
+    position: static;
+  }
+
+  .feed-composer-actions,
+  .feed-comment-box,
+  .message-box,
+  .social-composer-row {
+    align-items: stretch;
+  }
+
+  .filter-shell summary {
+    padding: 1.1rem 1.25rem;
+  }
+
+  .filter-body {
+    padding: 1.25rem;
+  }
+
+  .jobs-filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.875rem;
+  }
+
+  .filter-clear-action {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .client-header > div {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .brand-lockup {
+    gap: 0.55rem;
+  }
+
+  .brand-mark {
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 0.85rem;
+  }
+
+  .brand-title {
+    max-width: 8.5rem;
+    overflow: hidden;
+    font-size: 0.95rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .brand-subtitle,
+  .account-trigger > div {
+    display: none;
+  }
+
+  .account-trigger {
+    padding: 0.35rem;
+  }
+
+  .client-header-actions,
+  .account-menu-wrap {
+    gap: 0.4rem;
+  }
+
+  .workspace-shell,
+  main,
+  footer {
+    padding-inline: 0.75rem !important;
+  }
+
+  main h1 {
+    font-size: clamp(2.15rem, 12vw, 3.2rem) !important;
+    line-height: 1 !important;
+    letter-spacing: -0.045em !important;
+  }
+
+  .surface-card,
+  .feed-card,
+  .feed-composer,
+  .feed-post,
+  .feed-hero {
+    border-radius: 18px;
+    padding: 1rem;
+  }
+
+  .primary-action,
+  .secondary-action {
+    min-height: 44px;
+  }
+
+  .filter-shell {
+    border-radius: 18px;
+  }
+
+  .filter-shell summary {
+    min-height: 4rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .filter-body {
+    padding: 1rem;
+  }
+
+  .jobs-filter-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .jobs-filter-toggle-icon {
+    display: grid;
+  }
+
+  .jobs-filter-grid .input-shell,
+  .filter-clear-action {
+    min-height: 46px;
+  }
+
+  .client-stepper {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.35rem;
+  }
+
+  .client-stepper button {
+    flex: 0 0 auto;
+  }
+
+  .feed-composer-actions > *,
+  .feed-comment-box > *,
+  .message-box > *,
+  .social-composer-row > * {
+    width: 100%;
+  }
+
+  .feed-post-head,
+  .social-author {
+    flex-wrap: wrap;
+  }
+
+  .feed-badge,
+  .role-badge {
+    margin-left: 0;
+  }
+
+  .feed-message-dock {
+    inset: auto 0.5rem max(0.5rem, env(safe-area-inset-bottom));
+    width: auto;
+    max-height: calc(100dvh - 5.5rem);
+  }
+
+  .feed-message-launcher {
+    right: 0.75rem;
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  footer {
+    align-items: flex-start !important;
+    flex-direction: column;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .workspace-sidebar,
+  .public-navigation-drawer {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
   }
 }

@@ -9,6 +9,8 @@ namespace Identity.Application.DTOs
         string LastName,
         string PhoneNumber,
         string UserType,
+        string? OrganizationName,
+        string? BusinessPhoneNumber,
         bool AcceptedTerms,
         bool AcceptedPrivacyPolicy);
 

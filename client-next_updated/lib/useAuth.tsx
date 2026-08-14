@@ -115,10 +115,10 @@ export function useAuth() {
     }
   };
 
-  const register = async (email: string, password: string, firstName: string, lastName: string, userType = 'Professional', acceptedTerms = false, acceptedPrivacyPolicy = false) => {
+  const register = async (email: string, password: string, firstName: string, lastName: string, userType = 'Professional', organizationName = '', businessPhoneNumber = '', acceptedTerms = false, acceptedPrivacyPolicy = false) => {
     try {
       dispatch(setLoading(true));
-      const response = await authApi.register(email, password, firstName, lastName, userType, acceptedTerms, acceptedPrivacyPolicy);
+      const response = await authApi.register(email, password, firstName, lastName, userType, organizationName, businessPhoneNumber, acceptedTerms, acceptedPrivacyPolicy);
       storeBrowserSession(response.accessToken, response.refreshToken);
       const currentUser = await authApi.getCurrentUser();
       dispatch(setAuthTokens({ accessToken: response.accessToken, refreshToken: response.refreshToken, user: currentUser }));

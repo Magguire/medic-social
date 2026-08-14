@@ -133,7 +133,7 @@ export default function ProfessionalsDirectoryPage() {
           </div>
           <div className="mt-4 flex items-center justify-between gap-3 text-sm text-slate-500">
             <span>{loadingDirectory ? 'Refreshing talent results...' : `${directory.length} professional${directory.length === 1 ? '' : 's'} found`}</span>
-            <button type="button" className="secondary-action" onClick={() => setFilters(emptyFilters)}>Clear filters</button>
+            <button type="button" className="secondary-action filter-clear-action" onClick={() => setFilters(emptyFilters)}>Clear filters</button>
           </div>
           {accessError && <div className="mt-4 rounded-2xl bg-amber-50 px-4 py-4 text-sm font-semibold text-amber-800">{accessError} <button className="ml-2 underline" onClick={() => router.push('/settings')}>Review plans</button></div>}
 

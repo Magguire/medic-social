@@ -36,15 +36,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-6xl items-center justify-center px-4 py-10">
-      <div className="grid w-full overflow-hidden rounded-[32px] border border-[var(--client-border)] bg-[var(--client-panel)] shadow-[0_35px_90px_rgba(15,23,42,0.12)] lg:grid-cols-[0.9fr_1.1fr]">
-        <aside className="bg-[linear-gradient(140deg,var(--client-secondary),var(--client-primary))] px-8 py-10 text-white">
+    <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-6xl items-center justify-center py-4 sm:px-4 sm:py-10">
+      <div className="grid w-full overflow-hidden rounded-[22px] border border-[var(--client-border)] bg-[var(--client-panel)] shadow-[0_35px_90px_rgba(15,23,42,0.12)] sm:rounded-[32px] lg:grid-cols-[0.9fr_1.1fr]">
+        <aside className="bg-[linear-gradient(140deg,var(--client-secondary),var(--client-primary))] px-5 py-7 text-white sm:px-8 sm:py-10">
           <p className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">Account Access</p>
           <h1 className="mt-4 text-4xl font-black tracking-tight">Sign in to continue your healthcare hiring workflow.</h1>
           <p className="mt-4 text-white/82">Professionals return to track applications and verification. Employers continue hiring. Admins move into configuration, verification, and audit oversight.</p>
         </aside>
 
-        <main className="px-8 py-10">
+        <main className="px-5 py-7 sm:px-8 sm:py-10">
           <h2 className="text-3xl font-bold tracking-tight text-[var(--client-text)]">Welcome back</h2>
           <p className="mt-2 text-sm text-[var(--client-muted)]">Use the same platform account across the public client and the admin operations console.</p>
           {error && <div className="mt-5 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">{error}</div>}
